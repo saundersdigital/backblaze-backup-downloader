@@ -1,12 +1,54 @@
 import os
+import smtplib
 from pathlib import Path
+from email.mime.text import MIMEText
+from datetime import datetime
 from b2sdk.v2 import *
 
+# Backblaze B2 credentials
 B2_KEY_ID = os.environ.get('B2_APPLICATION_KEY_ID')
 B2_APPLICATION_KEY = os.environ.get('B2_APPLICATION_KEY')
 BUCKET_NAME = os.environ.get('B2_BUCKET_NAME')
 
+# Email credentials
+SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+EMAIL_RECIPIENT = os.environ.get('EMAIL_RECIPIENT')
+
 DOWNLOAD_DIR = '/app/b2_downloads/'
+
+def send_simple_email():
+    """Send simple text email notification with date and time"""
+    if not all([EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT]):
+        print("Warning: Email credentials not set. Skipping email notification.")
+        return False
+    
+    try:
+        current_time = datetime.now()
+        formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Create email message with date and time
+        message = f'Server Backup Download Complete\nTime: {formatted_time}'
+        subject = f'Server Backup Download Complete - {formatted_time}'
+
+        msg = MIMEText(message)
+        msg['Subject'] = subject
+        msg['From'] = EMAIL_SENDER
+        msg['To'] = EMAIL_RECIPIENT
+
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()  # Secure the connection
+            server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+            server.send_message(msg)
+        
+        print(f"Email notification sent successfully to {EMAIL_RECIPIENT}")
+        return True
+        
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        return False
 
 def main():
     if not all([B2_KEY_ID, B2_APPLICATION_KEY, BUCKET_NAME]):
@@ -51,6 +93,8 @@ def main():
         print("No files found in the bucket to download.")
     else:
         print(f"\nDownload complete. Total files processed: {file_count}")
+
+    send_simple_email()
 
 if __name__ == "__main__":
     main()
