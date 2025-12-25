@@ -2,7 +2,6 @@
 
 set -e  # Exit on error
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
@@ -17,6 +16,10 @@ check_env_file() {
 B2_APPLICATION_KEY_ID=application-key-id
 B2_APPLICATION_KEY=application-key
 B2_BUCKET_NAME=bucket-name
+
+EMAIL_SENDER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password_here
+EMAIL_RECIPIENT=recipient_email@example.com
 EOF
         
         echo -e "${GREEN}Template .env file created.${NC}"
@@ -25,9 +28,9 @@ EOF
     fi
     
     # Check if required variables are in .env file
-    if ! grep -q "B2_APPLICATION_KEY_ID" .env || ! grep -q "B2_APPLICATION_KEY" .env || ! grep -q "B2_BUCKET_NAME" .env; then
+    if ! grep -q "B2_APPLICATION_KEY_ID" .env || ! grep -q "B2_APPLICATION_KEY" .env || ! grep -q "B2_BUCKET_NAME" .env || ! grep -q "EMAIL_SENDER" .env || ! grep -q "EMAIL_PASSWORD" .env || ! grep -q "EMAIL_RECIPIENT" .env; then
         echo -e "${RED}Error: .env file is missing required variables!${NC}"
-        echo "Required variables: B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME"
+        echo "Required variables: B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME, EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT"
         exit 1
     fi
     
@@ -67,17 +70,11 @@ run_container() {
     fi
 }
 
-# Main execution
 main() {
     echo "=== B2 Downloader Script ==="
     
-    # Check .env file
     check_env_file
-    
-    # Build Docker image
     build_image
-    
-    # Run container
     run_container
 }
 
