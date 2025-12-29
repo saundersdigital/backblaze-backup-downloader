@@ -3,6 +3,7 @@ import smtplib
 from pathlib import Path
 from email.mime.text import MIMEText
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from b2sdk.v2 import *
 
 # Backblaze B2 credentials
@@ -16,6 +17,9 @@ SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
 EMAIL_SENDER = os.environ.get('EMAIL_SENDER')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_RECIPIENT = os.environ.get('EMAIL_RECIPIENT')
+
+TIMEZONE_NAME = os.environ.get('APP_TIMEZONE', 'Australia/Sydney')
+TIMEZONE = ZoneInfo(TIMEZONE_NAME)
 
 DOWNLOAD_DIR = '/app/b2_downloads/'
 
@@ -44,7 +48,7 @@ def send_email(subject, message):
         return False
 
 def send_success_email(file_count):
-    current_time = datetime.now()
+    current_time = datetime.now(TIMEZONE)
     formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
     
     subject = f'✅ Server Backup Download Complete - {formatted_time}'
@@ -53,7 +57,7 @@ def send_success_email(file_count):
     return send_email(subject, message)
 
 def send_failure_email(error_message):
-    current_time = datetime.now()
+    current_time = datetime.now(TIMEZONE)
     formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
     
     subject = f'❌ Server Backup Download FAILED - {formatted_time}'
@@ -62,7 +66,7 @@ def send_failure_email(error_message):
     return send_email(subject, message)
 
 def send_no_files_email():
-    current_time = datetime.now()
+    current_time = datetime.now(TIMEZONE)
     formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
     
     subject = f'⚠️ No Backup Files Found - {formatted_time}'

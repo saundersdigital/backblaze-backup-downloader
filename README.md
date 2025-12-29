@@ -13,7 +13,7 @@ Docker stack for downloading backup files from Backblaze B2 storage and Gmail em
 
 2. **Edit Backblaze credentials**
 
-   Create a `.env` with your Backblaze and Gmail details, it's advised to create a dedicated api key inside Backblaze for this script that has read only access to your B2 bucket:
+   Create a `.env` with your Backblaze, Gmail and Timezone details, it's advised to create a dedicated api key inside Backblaze for this script that has read only access to your B2 bucket:
 
    ```env
    B2_APPLICATION_KEY_ID=application-key-id
@@ -23,6 +23,8 @@ Docker stack for downloading backup files from Backblaze B2 storage and Gmail em
    EMAIL_SENDER=your_email@gmail.com
    EMAIL_PASSWORD=your_app_password_here
    EMAIL_RECIPIENT=recipient_email@example.com
+
+   APP_TIMEZONE=Australia/Sydney
    ```
 
 3. **Run the downloader**
@@ -39,4 +41,4 @@ Docker stack for downloading backup files from Backblaze B2 storage and Gmail em
 ## Resources
 
 - **BackBlaze B2**: [B2 Cloud Storage](https://www.backblaze.com/cloud-storage)
-- **Gmail App Password Setup**: [Gmail App Password Setup*](https://support.google.com/mail/answer/185833?hl=en)
+- **Gmail App Password Setup**: [Gmail App Password Setup](https://support.google.com/mail/answer/185833?hl=en)
