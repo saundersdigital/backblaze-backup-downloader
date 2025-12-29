@@ -23,6 +23,8 @@ B2_BUCKET_NAME=bucket-name
 EMAIL_SENDER=your_email@gmail.com
 EMAIL_PASSWORD=your_app_password_here
 EMAIL_RECIPIENT=recipient_email@example.com
+
+APP_TIMEZONE=Australia/Sydney
 EOF
         
         echo -e "${GREEN}Template .env file created.${NC}"
@@ -31,9 +33,9 @@ EOF
     fi
     
     # Check if required variables are in .env file
-    if ! grep -q "B2_APPLICATION_KEY_ID" .env || ! grep -q "B2_APPLICATION_KEY" .env || ! grep -q "B2_BUCKET_NAME" .env || ! grep -q "EMAIL_SENDER" .env || ! grep -q "EMAIL_PASSWORD" .env || ! grep -q "EMAIL_RECIPIENT" .env; then
+    if ! grep -q "B2_APPLICATION_KEY_ID" .env || ! grep -q "B2_APPLICATION_KEY" .env || ! grep -q "B2_BUCKET_NAME" .env || ! grep -q "EMAIL_SENDER" .env || ! grep -q "EMAIL_PASSWORD" .env || ! grep -q "EMAIL_RECIPIENT" .env || ! grep -q "APP_TIMEZONE" .env; then
         echo -e "${RED}Error: .env file is missing required variables!${NC}"
-        echo "Required variables: B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME, EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT"
+        echo "Required variables: B2_APPLICATION_KEY_ID, B2_APPLICATION_KEY, B2_BUCKET_NAME, EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT, APP_TIMEZONE"
         exit 1
     fi
     
