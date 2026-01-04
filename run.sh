@@ -42,6 +42,30 @@ EOF
     echo -e "${GREEN}.env file check passed.${NC}"
 }
 
+# Function to check if Docker is installed and running
+check_docker() {
+    echo "Checking Docker installation..."
+    
+    # Check if Docker command exists
+    if ! command -v docker &> /dev/null; then
+        echo -e "${RED}Error: Docker is not installed!${NC}"
+        echo "Please install Docker and ensure it's available in your PATH."
+        echo "Visit https://docs.docker.com/get-docker/ for installation instructions."
+        exit 1
+    fi
+    
+    # Check if Docker daemon is running
+    if ! docker info &> /dev/null; then
+        echo -e "${RED}Error: Docker daemon is not running!${NC}"
+        echo "Please start Docker daemon (Docker Desktop or Docker service)."
+        exit 1
+    fi
+    
+    # Check Docker version to ensure it's working properly
+    echo -e "${GREEN}Docker is installed and running.${NC}"
+    echo "Docker version: $(docker --version | cut -d' ' -f3 | cut -d',' -f1)"
+}
+
 # Function to build Docker image
 build_image() {
     echo "Building Docker image 'b2-downloader'..."
@@ -79,6 +103,7 @@ main() {
     echo "=== B2 Downloader Script ==="
     
     check_env_file
+    check_docker
     build_image
     run_container
 }
