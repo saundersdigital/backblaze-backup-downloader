@@ -42,6 +42,47 @@ EOF
     echo -e "${GREEN}.env file check passed.${NC}"
 }
 
+# Function to check if there is an internet connection
+check_internet() {
+    echo "Checking internet connection..."
+    
+    # Try multiple methods to check internet connectivity
+    # Method 1: ping a reliable host (Google DNS)
+    if ping -c 1 -W 2 8.8.8.8 &> /dev/null; then
+        echo -e "${GREEN}Internet connection detected via ping.${NC}"
+        return 0
+    fi
+    
+    # Method 2: curl with timeout to check connectivity
+    if command -v curl &> /dev/null; then
+        if curl -s --connect-timeout 3 -I https://www.google.com &> /dev/null; then
+            echo -e "${GREEN}Internet connection detected via curl.${NC}"
+            return 0
+        fi
+    fi
+    
+    # Method 3: wget with timeout (fallback if curl not available)
+    if command -v wget &> /dev/null; then
+        if wget -q --spider --timeout=3 https://www.google.com &> /dev/null; then
+            echo -e "${GREEN}Internet connection detected via wget.${NC}"
+            return 0
+        fi
+    fi
+    
+    # Method 4: Check for network interfaces (if all else fails)
+    if [ -n "$(ip route show default 2>/dev/null | grep -v '^[[:space:]]*$')" ]; then
+        echo -e "${GREEN}Network interface detected.${NC}"
+        echo -e "${YELLOW}Warning: Internet connectivity cannot be fully verified.${NC}"
+        echo "The script will continue, but may fail if actual internet connection is not available."
+        return 0
+    fi
+    
+    echo -e "${RED}Error: No internet connection detected!${NC}"
+    echo "This script requires an internet connection to work with Backblaze B2."
+    echo "Please check your network connection and try again."
+    exit 1
+}
+
 # Function to check if Docker is installed and running
 check_docker() {
     echo "Checking Docker installation..."
@@ -103,6 +144,7 @@ main() {
     echo "=== B2 Downloader Script ==="
     
     check_env_file
+    check_internet
     check_docker
     build_image
     run_container
